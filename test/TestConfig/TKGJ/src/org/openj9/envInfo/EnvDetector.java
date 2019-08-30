@@ -57,7 +57,7 @@ public class EnvDetector {
 		if (SPECInfo == null || javaVersionInfo == -1 || javaImplInfo == null) {
 			System.exit(1);
 		}
-		String SPECvalue = "DETECTED_SPEC=" + SPECInfo + "\n";
+		String SPECvalue = "DETECTED_SPEC=" + "" + "\n";
 		String JDKVERSIONvalue = "DETECTED_JDK_VERSION=" + javaVersionInfo + "\n";
 		String JDKIMPLvalue = "DETECTED_JDK_IMPL=" + javaImplInfo + "\n";
 
