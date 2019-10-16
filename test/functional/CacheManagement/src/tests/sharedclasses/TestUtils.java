@@ -534,7 +534,7 @@ public class TestUtils {
 	}
 
 	protected static String getCacheFileLocationForPersistentCache(String cachename) {
-		String cacheDir = getCacheDir(cachename,true);		
+		String cacheDir = getCacheDir(cachename,true);
 		String expectedFileLocation = 
 				cacheDir+File.separator+
 				getCacheFileName(cachename,true);
@@ -575,16 +575,26 @@ public class TestUtils {
 		//NOTE: use above statics to save some time when running tests ...
 		
 		String cmd = "";
-		
-		if (persistent==true)
-		{
-			cmd = getCommand("getCacheFileName",cachename);
+		if ( isOpenJ9() && cachename.indexOf("groupaccess") != -1 ) {
+			if (persistent==true)
+			{
+				cmd = getCommand("getCacheFileNameGroupAccess",cachename);
+			}
+			else
+			{
+				cmd = getCommand("getCacheFileNameNonPersistGroupAccess",cachename);
+			}
+		} else {
+			if (persistent==true)
+			{
+				cmd = getCommand("getCacheFileName",cachename);
+			}
+			else
+			{
+				cmd = getCommand("getCacheFileNameNonPersist",cachename);
+			}
 		}
-		else
-		{
-			cmd = getCommand("getCacheFileNameNonPersist",cachename);
-		}
-		
+
 		if (lastcmd_getCacheDir.equals(cmd) && lastresult_getCacheDir.equals("")!=false)
 		{
 			return lastresult_getCacheDir;
@@ -619,7 +629,6 @@ public class TestUtils {
 		fail("Error: should never hit this code.");
 		return "";
 	}
-	
 	
 	private static String lastcmd_getCacheFileName = "";
 	private static String lastresult_getCacheFileName = "";
@@ -1491,4 +1500,21 @@ public class TestUtils {
 	public static String[] getLastCommandStderr() {
 		return RunCommand.lastCommandStderrLines;
 	}
+	
+	public static boolean isIBM() {
+		return System.getProperty("java.vm.vendor").toLowerCase().contains("ibm");
+	}
+	
+	public static boolean isOpenJ9() {
+		return System.getProperty("java.vm.vendor").toLowerCase().contains("openj9");
+	}
+	
+	public static String getCacheNonPersistentDir(String dir) {
+		if ( dir.contains("javasharedresources") ) {
+			int index = dir.lastIndexOf(java.io.File.separator);
+	    	return dir.substring(0, index);
+		}
+		return dir;
+	}
+
 }

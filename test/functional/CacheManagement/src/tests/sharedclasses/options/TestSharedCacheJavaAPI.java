@@ -38,6 +38,7 @@ public class TestSharedCacheJavaAPI extends TestUtils {
     	int newCacheCount = 0;
     	String addrMode, jvmLevel;
     	List<SharedClassCacheInfo> cacheList;
+    	List<SharedClassCacheInfo> cacheGroupAccessList;
     	int compressedRefMode = 0;
     	
     	if (TestUtils.isCompressedRefEnabled()) {
@@ -55,7 +56,8 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 	    	if (dir == null) {
 	    		dir = getControlDir();
 	    	}
-	    	
+	    	System.out.println(" initial getCachedir isn javaAPI is " + dir);
+
 	    	/* get cache count before creating any new cache */
 	    	cacheList = SharedClassUtilities.getSharedCacheInfo(dir, SharedClassUtilities.NO_FLAGS, false);
 	    	if (cacheList == null) {
@@ -106,7 +108,18 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 		    	fail("SharedClassUtilities.getSharedCacheInfo failed: no cache found");
 		    }
 		    newCacheCount = cacheList.size();
+		    
+		    if (dirGroupAccess != null) {
+		    	cacheGroupAccessList = SharedClassUtilities.getSharedCacheInfo(dirGroupAccess, SharedClassUtilities.NO_FLAGS, false);
+		    	newCacheCount += cacheGroupAccessList.size();
+		    }
 		    if ((newCacheCount == -1) || (newCacheCount != (oldCacheCount + persistentCount + nonpersistentCount + snapshotCount))) {
+		    	System.out.println("javaapi cache account is oldCacheCount " + oldCacheCount);
+		    	System.out.println("javaapi cache account is newCacheCount " + newCacheCount);
+		    	System.out.println("javaapi cache account is persistentCount " + persistentCount);
+		    	System.out.println("javaapi cache account is nonpersistentCount " + nonpersistentCount);
+		    	System.out.println("javaapi cache account is snapshotCount " + snapshotCount);
+		    	
 		    	fail("SharedClassUtilities.getSharedCacheInfo failed: Invalid number of cache found\t" +
 		    			"expected: " + (oldCacheCount + persistentCount + nonpersistentCount + snapshotCount) + "\tfound: " + newCacheCount);
 		    }
@@ -229,6 +242,7 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 			    
 		    if (isMVS() == false) {
 		    	for(String cacheName: persistentList) {
+		    		System.out.println("javaapi destroy cache dir is " + dir);
 		    		int ret;
 		    		try {
 			        	SharedClassUtilities.destroySharedCache(dir, INVALID_CACHE_TYPE, cacheName, false);
@@ -257,6 +271,8 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 		    if (realtimeTestsSelected() == false) {
 			    for(String cacheName: nonpersistentList) {
 			    	int ret;
+			    	System.out.println("javaapi destroy nonpersistent cache dir is " + dir);
+		    		
 			    	try {
 			    		SharedClassUtilities.destroySharedCache(dir, INVALID_CACHE_TYPE, cacheName, false);
 			    		fail("SharedClassUtilities.destroySharedCache (non-persistent) failed: should have thrown IllegalArgumentException");
