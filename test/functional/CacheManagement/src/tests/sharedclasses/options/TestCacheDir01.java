@@ -17,6 +17,7 @@ public class TestCacheDir01 extends TestUtils {
 	  }
 	  String dir = createTemporaryDirectory("TestCacheDir01");
 	  String currentCacheDir = getCacheDir();
+	  System.out.println("TestCacheDir01 initial getCacheDir is " + currentCacheDir);
 	  setCacheDir(dir);
 	  try {
 		  createPersistentCache("Foo");	  
@@ -28,5 +29,7 @@ public class TestCacheDir01 extends TestUtils {
 		  setCacheDir(currentCacheDir);
 		  deleteTemporaryDirectory(dir);
 	  }
+	  System.out.println("TestCacheDir01 after reset getCacheDir is " + currentCacheDir);
+	  System.out.println("TestCacheDir01 after reset getCacheDir is " + getCacheDir());
   }
 }

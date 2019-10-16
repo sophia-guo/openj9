@@ -26,9 +26,13 @@ public class TestSharedCacheJvmtiAPI extends TestUtils {
         }
         try {
 	    	dir = getCacheDir();
+	    	System.out.println("initial getCacheDir is  " + dir);
 	    	if (dir == null) {
+	    		dir = getControlDir();
+	    		System.out.println("initial getCacheDir in JVMAPI is  " + dir);
 	    	}
 	    	
+	    	System.out.println("initial getCacheDir or getControldir in JVMAPI is  " + dir);
 	    	/* get cache count before creating any new cache */
 	    	oldCacheCount = iterateSharedCache(dir, NO_FLAGS, false);
 		    if (oldCacheCount == -1) {
@@ -61,13 +65,19 @@ public class TestSharedCacheJvmtiAPI extends TestUtils {
 					snapshotCount++;
 				}
 	    	}
-		    
+	    	System.out.println("after cache created getCacheDir in JVMAPI is  " + dir);
 		    newCacheCount = iterateSharedCache(dir, NO_FLAGS, false);
 		    if ((newCacheCount == -1) || (newCacheCount != oldCacheCount + cacheCount + snapshotCount)) {
+		    	System.out.println("javajvmapi cache account is oldCacheCount " + oldCacheCount);
+		    	System.out.println("javaapi cache account is cacheCount " + cacheCount);
+		    	System.out.println("javaapi cache account is snapshotCount " + snapshotCount);
+		    	System.out.println("javaapi cache account is newCacheCount " + newCacheCount);
 		    	fail("iterateSharedCacheFunction failed");
 		    }
 		    
 		    if (isMVS() == false) {
+		    	System.out.println("Doing destroy cache dir in JVMAPI is  " + dir);
+			    
 		    	destroySharedCache(dir, "cache1", INVALID_CACHE_TYPE, false);
 		    	checkFileExistsForPersistentCache("cache1");
 		    	destroySharedCache(dir, "cache1", NONPERSISTENT, false);
@@ -82,6 +92,7 @@ public class TestSharedCacheJvmtiAPI extends TestUtils {
 				}
 		    }
 		    if (realtimeTestsSelected() == false) {
+		    	System.out.println("Doing destroy cache dir in JVMAPI non persistent is  " + dir);
 		    	destroySharedCache(dir, "cache2", INVALID_CACHE_TYPE, false);
 			    checkFileExistsForNonPersistentCache("cache2");
 		    	destroySharedCache(dir, "cache2", PERSISTENT, false);

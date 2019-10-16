@@ -8,10 +8,10 @@ export REALTIME_PLATFORM=TRUE
 endif
 
 SYSV_CLEANUP :=perl $(JVM_TEST_ROOT)$(D)TestConfig$(D)scripts$(D)tools$(D)sysvcleanup.pl all
-ifeq ("$(PLATFORM)", "wind") 
+ifeq ("$(SPEC)", "win") 
 	SYSV_CLEANUP := ""
-else ifeq ("$(PLATFORM)", "aix") 
+else ifeq ("$(SPEC)", "aix") 
 	SYSV_CLEANUP :=perl $(JVM_TEST_ROOT)$(D)TestConfig$(D)scripts$(D)tools$(D)sysvcleanup.pl all aix
-else ifeq ("$(PLATFORM)", "zos") 
+else ifeq ("$(SPEC)", "zos") 
 	SYSV_CLEANUP :=perl $(JVM_TEST_ROOT)$(D)TestConfig$(D)scripts$(D)tools$(D)sysvcleanup.pl all zos
 endif
