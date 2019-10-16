@@ -44,10 +44,10 @@
 		-agentlib:jvmtitest=test:sca001 \
 		-DREALTIME=$(REALTIME_PLATFORM) \
 		-DEXECUTABLE_SUFFIX=$(EXECUTABLE_SUFFIX) \
-		-DJAVA_TEST_COMMAND=$(Q)$(JAVA_COMMAND) $(JVM_OPTIONS)$(Q)\
-		-DJAVA5_HOME=$(JAVA_HOME) \
+		-DJAVA_TEST_COMMAND=$(SQ)$(JAVA_COMMAND) $(JVM_OPTIONS)$(SQ)\
+		-DJAVA5_HOME=$(SQ)$(JAVA_HOME)$(SQ) \
 		$(Q)-DTEST_JVM_OPTIONS=$(JVM_OPTIONS)$(Q) \
-		-cp $(Q)CacheManagement.jar$(P)$(LIB_DIR)$(D)junit4.jar$Q \
+		-cp $(Q)CacheManagement.jar$(P)$(LIB_DIR)$(D)junit4.jar$(Q) \
 		junit.textui.TestRunner tests.sharedclasses.options.junit.AllTests; \
 	$(TEST_STATUS)</command>
 		<levels>

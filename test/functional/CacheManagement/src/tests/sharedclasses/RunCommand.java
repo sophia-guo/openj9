@@ -144,6 +144,7 @@ public class RunCommand {
         lastProcess = null;
         
         try {
+        	System.out.println("Executing command: "+cmd);
         	if (logCommands) {
         		System.out.println("Executing command: "+cmd);
         	}
