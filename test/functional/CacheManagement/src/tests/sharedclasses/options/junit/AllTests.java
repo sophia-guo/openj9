@@ -16,8 +16,8 @@ public class AllTests {
 			suite.addTestSuite(TestOptionsCacheDirRealtime.class);
 		} else {
 			suite.addTestSuite(TestOptionsDefault.class);
-			suite.addTestSuite(TestOptionsControlDir.class);
-			suite.addTestSuite(TestOptionsCacheDir.class);
+		//	suite.addTestSuite(TestOptionsControlDir.class);
+		//	suite.addTestSuite(TestOptionsCacheDir.class);
 		}
 		//$JUnit-END$
 		return suite;

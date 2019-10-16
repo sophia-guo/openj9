@@ -28,6 +28,7 @@ public class TestOptionsDefault extends TestOptionsBase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		TestUtils.runDestroyAllCaches();
+		TestUtils.runDestroyAllGroupAccessCaches();
 		if (System.getProperty("check.shared.memory","no").toLowerCase().equals("yes")) {
 			if (!TestUtils.isWindows() && !TestUtils.isMVS()) {
 				Set after = TestUtils.getSharedMemorySegments();
@@ -47,5 +48,6 @@ public class TestOptionsDefault extends TestOptionsBase {
 			}
 		}
 		TestUtils.runDestroyAllCaches();
+		TestUtils.runDestroyAllGroupAccessCaches();
 	}
 }

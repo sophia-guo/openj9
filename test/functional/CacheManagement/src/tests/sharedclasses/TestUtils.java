@@ -134,16 +134,22 @@ public class TestUtils {
 		    if (config.getProperty("logCommands","false").equalsIgnoreCase("true")) {
 				RunCommand.logCommands=true;
 			}
-		    		    
+	
 		    if (exesuff.equals(".exe")==true)
 		    {
 		    	String appdata = System.getenv("APPDATA");		 
 		    	String defaultCacheLocation = new File(appdata+"\\..\\Local Settings\\Application Data").getAbsolutePath();
-		    	config.put("defaultCacheLocation",defaultCacheLocation);		    		    	
+		    	config.put("defaultCacheLocation",defaultCacheLocation);
 		    }
 		    else
 		    {
-		    	config.put("defaultCacheLocation","/tmp/"); 
+		    	if (isOpenJ9()) {
+			    	String userHome = System.getProperty("user.home");
+			    	config.put("defaultCacheGroupAccessLocation",userHome);
+			    } else {
+			    	config.put("defaultCacheGroupAccessLocation","/tmp/");
+			    } 
+			    config.put("defaultCacheLocation","/tmp/");
 		    }
 		    
 		} catch (Exception e) {
@@ -160,6 +166,7 @@ public class TestUtils {
 	}
 	
 	public static String getCacheDir() { return (String)config.get("cacheDir");}
+	public static String getCacheGroupAccessDir() { return (String)config.get("defaultCacheGroupAccessLocation");}
 	public static void setCacheDir(String dir) {
 		if (dir==null) config.remove("cacheDir");
 		else {
@@ -283,6 +290,10 @@ public class TestUtils {
 	
 	public static void runDestroyAllCaches() {
 		RunCommand.execute(getCommand(DestroyAllCaches),false);
+	}
+	
+	public static void runDestroyAllGroupAccessCaches() {
+		RunCommand.execute(getCommand(DestroyAllCaches, ",groupaccess"),false);
 	}
 	
 	public static void runDestroyAllSnapshots() {
@@ -516,12 +527,13 @@ public class TestUtils {
 	}
 	
 	protected static String getCacheFileLocationForNonPersistentCache(String cachename) {
-		String cacheDir = getCacheDir(cachename,false);		
+		String cacheDir = getCacheDir(cachename,false);
 		String expectedFileLocation = 
 				cacheDir+File.separator+
 				getCacheFileName(cachename,false);
 		return expectedFileLocation;
 	}
+	
 	protected static String getCacheFileDirectory(boolean forPersistentCache) {
 		String defaultLoc = getConfigParameter("defaultCacheLocation");
 		String cacheDirLoc = getConfigParameter("cacheDir");
@@ -532,7 +544,8 @@ public class TestUtils {
 		else theDir = defaultLoc+File.separator+"javasharedresources";
 		return theDir;
 	}
-
+	
+	protected static String getGroupAccessCacheFileDirectory() { return getConfigParameter("defaultCacheGroupAccessLocation"); }
 	protected static String getCacheFileLocationForPersistentCache(String cachename) {
 		String cacheDir = getCacheDir(cachename,true);
 		String expectedFileLocation = 
@@ -542,7 +555,7 @@ public class TestUtils {
 	}
 	
 	protected static String getCacheFileLocationForCacheSnapshot(String cachename) {
-		String cacheDir = getCacheDir(cachename, false);		
+		String cacheDir = getCacheDir(cachename, false);
 		String expectedFileLocation = 
 				cacheDir + File.separator +
 				getSnapshotFileName(cachename);
@@ -576,7 +589,16 @@ public class TestUtils {
 		
 		String cmd = "";
 		
-		if ( isIBM() ) {
+		if ( isOpenJ9() && cachename.indexOf("groupaccess") != -1 ) {
+			if (persistent==true)
+			{
+				cmd = getCommand("getCacheFileNameGroupAccess",cachename);
+			}
+			else
+			{
+				cmd = getCommand("getCacheFileNameNonPersistGroupAccess",cachename);
+			}
+		} else {
 			if (persistent==true)
 			{
 				cmd = getCommand("getCacheFileName",cachename);
@@ -584,27 +606,6 @@ public class TestUtils {
 			else
 			{
 				cmd = getCommand("getCacheFileNameNonPersist",cachename);
-			}
-		} else if ( isOpenj9() ) {
-			if ( cachename.contains("groupaccess") ) {
-				if (persistent==true)
-				{
-					cmd = getCommand("getCacheFileNameGroupAccess",cachename);
-				}
-				else
-				{
-					cmd = getCommand("getCacheFileNameNonPersistGroupAccess",cachename);
-				}
-				
-			} else {
-				if (persistent==true)
-				{
-					cmd = getCommand("getCacheFileName",cachename);
-				}
-				else
-				{
-					cmd = getCommand("getCacheFileNameNonPersist",cachename);
-				}
 			}
 		}
 		
@@ -633,7 +634,7 @@ public class TestUtils {
 					return "";
 				}
 				String cacheDir = test.substring(0,i);//read just the dir
-				System.out.println("HERE(getCacheDir):"+test+" "+cacheDir);
+		//		System.out.println("HERE(getCacheDir):"+test+" "+cacheDir);
 				
 				lastresult_getCacheDir = cacheDir;
 				return cacheDir;
@@ -836,7 +837,8 @@ public class TestUtils {
 	  }
 	public static void checkNoFileForPersistentCache(String cachename) {
 			checkFileDoesNotExist(getCacheFileLocationForPersistentCache(cachename));
-	  }
+	}
+
 	//TODO isnt this the same as that other method below?
 	public static void checkNoFileForNonPersistentCache(String cachename) {
 		if (isWindows()) {
@@ -849,14 +851,16 @@ public class TestUtils {
 	public static void checkFileDoesNotExistForPersistentCache(String cachename) {
 		checkFileDoesNotExist(getCacheFileLocationForPersistentCache(cachename));
 	}
-	
+	public static void checkFileDoesNotExistForPersistentGroupAccessCache(String cachename) {
+		checkFileDoesNotExist(getCacheFileLocationForPersistentCache(cachename));
+	}
 	public static void checkFileDoesNotExistForCacheSnapshot(String cachename) {
 		checkFileDoesNotExist(getCacheFileLocationForCacheSnapshot(cachename));
 	}
 	
 	public static void checkFileDoesNotExistForNonPersistentCache(String cachename) {
 		if (isWindows()) {
-		checkFileDoesNotExist(getCacheFileLocationForNonPersistentCache(cachename));
+			checkFileDoesNotExist(getCacheFileLocationForNonPersistentCache(cachename));
 		} else {
 			checkFileDoesNotExist(getCacheFileLocationForNonPersistentCache(cachename));
 			checkFileDoesNotExist(getCacheFileLocationForNonPersistentCache(cachename).replace("memory","semaphore"));
@@ -865,8 +869,8 @@ public class TestUtils {
 	
 	public static void checkFileExistsForPersistentCache(String cachename) {
 			checkFileExists(getCacheFileLocationForPersistentCache(cachename));
-	  }
-	
+	}
+
 	public static void checkFileExistsForNonPersistentCache(String cachename) {
 		Properties p = System.getProperties();
 		if (isWindows()) {
@@ -1516,21 +1520,19 @@ public class TestUtils {
 	}
 	
 	public static boolean isIBM() {
-		String vmVendor = System.getProperty("java.vm.vendor");
-		vmVendor = vmVendor.toLowerCase();
-		if (vmVendor.contains("ibm")) {
-			return true;
-		}
-		return false;
+		return System.getProperty("java.vm.vendor").toLowerCase().contains("ibm");
 	}
 	
-	public static boolean isOpenj9() {
-		String vmVendor = System.getProperty("java.vm.vendor");
-		vmVendor = vmVendor.toLowerCase();
-		if (vmVendor.contains("openj9")) {
-			return true;
+	public static boolean isOpenJ9() {
+		return System.getProperty("java.vm.vendor").toLowerCase().contains("openj9");
+	}
+	
+	public static String getCacheNonPersistentDir(String dir) {
+		if ( dir.contains("javasharedresources") ) {
+			int index = dir.lastIndexOf(java.io.File.separator);
+	    	return dir.substring(0, index);
 		}
-		return false;
+		return dir;
 	}
 
 }
