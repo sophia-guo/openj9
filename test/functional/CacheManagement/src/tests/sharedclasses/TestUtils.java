@@ -534,7 +534,7 @@ public class TestUtils {
 	}
 
 	protected static String getCacheFileLocationForPersistentCache(String cachename) {
-		String cacheDir = getCacheDir(cachename,true);		
+		String cacheDir = getCacheDir(cachename,true);
 		String expectedFileLocation = 
 				cacheDir+File.separator+
 				getCacheFileName(cachename,true);
@@ -576,13 +576,36 @@ public class TestUtils {
 		
 		String cmd = "";
 		
-		if (persistent==true)
-		{
-			cmd = getCommand("getCacheFileName",cachename);
-		}
-		else
-		{
-			cmd = getCommand("getCacheFileNameNonPersist",cachename);
+		if ( isIBM() ) {
+			if (persistent==true)
+			{
+				cmd = getCommand("getCacheFileName",cachename);
+			}
+			else
+			{
+				cmd = getCommand("getCacheFileNameNonPersist",cachename);
+			}
+		} else if ( isOpenj9() ) {
+			if ( cachename.contains("groupaccess") ) {
+				if (persistent==true)
+				{
+					cmd = getCommand("getCacheFileNameGroupAccess",cachename);
+				}
+				else
+				{
+					cmd = getCommand("getCacheFileNameNonPersistGroupAccess",cachename);
+				}
+				
+			} else {
+				if (persistent==true)
+				{
+					cmd = getCommand("getCacheFileName",cachename);
+				}
+				else
+				{
+					cmd = getCommand("getCacheFileNameNonPersist",cachename);
+				}
+			}
 		}
 		
 		if (lastcmd_getCacheDir.equals(cmd) && lastresult_getCacheDir.equals("")!=false)
@@ -1491,4 +1514,23 @@ public class TestUtils {
 	public static String[] getLastCommandStderr() {
 		return RunCommand.lastCommandStderrLines;
 	}
+	
+	public static boolean isIBM() {
+		String vmVendor = System.getProperty("java.vm.vendor");
+		vmVendor = vmVendor.toLowerCase();
+		if (vmVendor.contains("ibm")) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isOpenj9() {
+		String vmVendor = System.getProperty("java.vm.vendor");
+		vmVendor = vmVendor.toLowerCase();
+		if (vmVendor.contains("openj9")) {
+			return true;
+		}
+		return false;
+	}
+
 }

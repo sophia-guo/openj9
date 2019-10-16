@@ -63,6 +63,9 @@ public class TestSharedCacheJvmtiAPI extends TestUtils {
 	    	}
 		    
 		    newCacheCount = iterateSharedCache(dir, NO_FLAGS, false);
+		    System.out.println("newCacheCount is " + newCacheCount +"oldCacheCout is " + oldCacheCount );
+		    System.out.println("cacheCount is " + cacheCount +" snapshot Count is " + snapshotCount);
++ 		    
 		    if ((newCacheCount == -1) || (newCacheCount != oldCacheCount + cacheCount + snapshotCount)) {
 		    	fail("iterateSharedCacheFunction failed");
 		    }
