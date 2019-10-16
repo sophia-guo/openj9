@@ -143,6 +143,9 @@ public class TestUtils {
 		    }
 		    else
 		    {
+		    	if (isOpenJ9()) {
+		    		config.put("defaultCacheGroupAccessLocation","/tmp/");
+			    } 
 		    	config.put("defaultCacheLocation","/tmp/"); 
 		    }
 		    
@@ -160,6 +163,7 @@ public class TestUtils {
 	}
 	
 	public static String getCacheDir() { return (String)config.get("cacheDir");}
+	public static String getCacheGroupAccessDir() { return (String)config.get("defaultCacheGroupAccessLocation");}
 	public static void setCacheDir(String dir) {
 		if (dir==null) config.remove("cacheDir");
 		else {
@@ -283,6 +287,10 @@ public class TestUtils {
 	
 	public static void runDestroyAllCaches() {
 		RunCommand.execute(getCommand(DestroyAllCaches),false);
+	}
+	
+	public static void runDestroyAllGroupAccessCaches() {
+		RunCommand.execute(getCommand(DestroyAllCaches, ",groupaccess"),false);
 	}
 	
 	public static void runDestroyAllSnapshots() {
@@ -534,7 +542,7 @@ public class TestUtils {
 	}
 
 	protected static String getCacheFileLocationForPersistentCache(String cachename) {
-		String cacheDir = getCacheDir(cachename,true);		
+		String cacheDir = getCacheDir(cachename,true);
 		String expectedFileLocation = 
 				cacheDir+File.separator+
 				getCacheFileName(cachename,true);
@@ -575,16 +583,26 @@ public class TestUtils {
 		//NOTE: use above statics to save some time when running tests ...
 		
 		String cmd = "";
-		
-		if (persistent==true)
-		{
-			cmd = getCommand("getCacheFileName",cachename);
+		if ( isOpenJ9() && cachename.indexOf("groupaccess") != -1 ) {
+			if (persistent==true)
+			{
+				cmd = getCommand("getCacheFileNameGroupAccess",cachename);
+			}
+			else
+			{
+				cmd = getCommand("getCacheFileNameNonPersistGroupAccess",cachename);
+			}
+		} else {
+			if (persistent==true)
+			{
+				cmd = getCommand("getCacheFileName",cachename);
+			}
+			else
+			{
+				cmd = getCommand("getCacheFileNameNonPersist",cachename);
+			}
 		}
-		else
-		{
-			cmd = getCommand("getCacheFileNameNonPersist",cachename);
-		}
-		
+
 		if (lastcmd_getCacheDir.equals(cmd) && lastresult_getCacheDir.equals("")!=false)
 		{
 			return lastresult_getCacheDir;
@@ -610,7 +628,7 @@ public class TestUtils {
 					return "";
 				}
 				String cacheDir = test.substring(0,i);//read just the dir
-				System.out.println("HERE(getCacheDir):"+test+" "+cacheDir);
+			//	System.out.println("HERE(getCacheDir):"+test+" "+cacheDir);
 				
 				lastresult_getCacheDir = cacheDir;
 				return cacheDir;
@@ -619,7 +637,6 @@ public class TestUtils {
 		fail("Error: should never hit this code.");
 		return "";
 	}
-	
 	
 	private static String lastcmd_getCacheFileName = "";
 	private static String lastresult_getCacheFileName = "";
@@ -1491,4 +1508,21 @@ public class TestUtils {
 	public static String[] getLastCommandStderr() {
 		return RunCommand.lastCommandStderrLines;
 	}
+	
+	public static boolean isIBM() {
+		return System.getProperty("java.vm.vendor").toLowerCase().contains("ibm");
+	}
+	
+	public static boolean isOpenJ9() {
+		return System.getProperty("java.vm.vendor").toLowerCase().contains("openj9");
+	}
+	
+	public static String removeJavaSharedResourcesDir(String dir) {
+		if ( dir.contains("javasharedresources") ) {
+			int index = dir.lastIndexOf(java.io.File.separator);
+	    	return dir.substring(0, index);
+		}
+		return dir;
+	}
+
 }
