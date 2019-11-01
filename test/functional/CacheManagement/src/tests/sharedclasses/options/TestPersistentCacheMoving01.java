@@ -21,14 +21,15 @@ public class TestPersistentCacheMoving01 extends TestUtils {
 	  checkOutputContains("Stored class SimpleApp2", "Did not find expected message about the test class being stored in the cache");
 	  String currentCacheDir = getCacheDir();
 	  String tmpdir = createTemporaryDirectory("TestPersistentCacheMoving01");
+	  System.out.println("tmpdir is " + tmpdir);
 	  try {
 		  
 		  // move the cache file to the temp directory
 		  String loc = getCacheFileLocationForPersistentCache("Foo");
 		  File f = new File(loc);
 		  File fHidden = new File(tmpdir+File.separator+getCacheFileName("Foo", true));
-		//  System.out.println(loc);
-		//  System.out.println(fHidden);
+		  System.out.println(loc);
+		  System.out.println(fHidden);
 		  if (!f.renameTo(fHidden)) fail("Could not rename the control file to be hidden");
 		  setCacheDir(tmpdir);
 		  listAllCaches();
@@ -40,7 +41,7 @@ public class TestPersistentCacheMoving01 extends TestUtils {
 
 		  runDestroyAllCaches();
 	  } finally {
-		  deleteTemporaryDirectory(tmpdir);
+	//	  deleteTemporaryDirectory(tmpdir);
 		  setCacheDir(currentCacheDir);
 	  }
   }

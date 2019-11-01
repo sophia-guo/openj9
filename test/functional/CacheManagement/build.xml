@@ -41,7 +41,7 @@
 			<fileset dir="./configs"/>
 			<fileset dir="./testcode"/>
 		</copy>
-		<jar jarfile="${build}/testcode.jar" filesonly="true">
+		<jar jarfile="${src}/testcode.jar" filesonly="true">
 			<fileset dir="${testcodebuild}"/>
 		</jar>
 		<jar jarfile="${DEST}/CacheManagement.jar" filesonly="true">
