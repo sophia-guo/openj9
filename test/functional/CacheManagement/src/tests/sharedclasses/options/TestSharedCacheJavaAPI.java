@@ -11,7 +11,8 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 	 */
 	private final static int SOFT_MAX_BYTES_VALUE = 16 * 1024 * 1024;
 	private final static int TEMP_JAVA10_JVMLEVEL = 6;
-
+	/* Define MULTI_LAYER_CACHES to be the number of caches which have multiple layers */
+	private final static int MULTI_LAYER_CACHES = 1;
 	private static int persistentCount, nonpersistentCount, snapshotCount, persistentGroupAccessCount, nonpersistentGroupAccessCount;
 	private static ArrayList<String> persistentList, nonpersistentList, snapshotList, persistentGroupAccessList, nonpersistentGroupAccessList;
 		
@@ -27,6 +28,7 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 					persistentList.add("cache1_groupaccess");
 				}
 			}
+			persistentList.add("cache3_multilayercache");
 		}
     	if (realtimeTestsSelected() == false) {
 			nonpersistentList = new ArrayList<String>();
@@ -57,7 +59,8 @@ public class TestSharedCacheJavaAPI extends TestUtils {
     	List<SharedClassCacheInfo> cacheGroupAccessList = null;
     	List<SharedClassCacheInfo> cacheGroupAccessNonPersistentList = null;
     	int compressedRefMode = 0;
-
+    	int multilayercache = 0;
+    	
     	if (TestUtils.isCompressedRefEnabled()) {
     		compressedRefMode = 1;
     	}
@@ -128,10 +131,16 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 	       				runSimpleJavaProgramWithPersistentCache(cacheName, "groupAccess");
 	       			} else {
 	       				runSimpleJavaProgramWithPersistentCache(cacheName, null);
+						if ((addrMode.equals("64")) && (cacheName.indexOf("multilayercache") != -1)) {
+							runSimpleJavaProgramWithPersistentCache(cacheName, "createLayer");
+						}
 	       			}
 	       			checkFileExistsForPersistentCache(cacheName);
 	       		}
 	       		persistentCount = persistentList.size();
+				if (addrMode.equals("64")) {
+					persistentCount += MULTI_LAYER_CACHES;
+				}
 	    	}
 	       	if (realtimeTestsSelected() == false) {
 	       		if (dirGroupAccess != null) {
@@ -195,6 +204,14 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 			    for(String cacheName: persistentList) {
 			    	for(SharedClassCacheInfo cacheInfo: cacheList) {
 			    		if (cacheInfo.getCacheName().equals(cacheName)) {
+							if (cacheInfo.getCacheLayer() != 0) {
+								/* Get the number of layer 1 caches */
+								if ((cacheInfo.getCacheName().equals("cache3_multilayercache")) && (1 == cacheInfo.getCacheLayer())) {
+									multilayercache += 1;
+								} else {
+									fail("SharedClassUtilities.getSharedCacheInfo failed for persistent cache: Cache information is not proper, incorrect cache layer number");
+								}
+							}
 			    			if ((cacheInfo.getCacheSize() <= 0) ||
 			    				(cacheInfo.getCacheSoftMaxBytes() != SOFT_MAX_BYTES_VALUE) ||
 			    				(cacheInfo.getCacheFreeBytes() <= 0) ||
@@ -247,6 +264,10 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 			    		}
 			    	}
 			    }
+				if ((addrMode.equals("64")) && (MULTI_LAYER_CACHES != multilayercache)) {
+						fail("SharedClassUtilities.getSharedCacheInfo failed for persistent cache: Incorrect number of multi-layer Cache\t" +
+								"expected: " + MULTI_LAYER_CACHES + "\tfound: " + multilayercache);
+				}
 			    if (dirGroupAccess != null){
 			    	for(String cacheName: persistentGroupAccessList) {
 				    	for(SharedClassCacheInfo cacheInfo: cacheGroupAccessList) {
@@ -473,6 +494,12 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 			    	if ((-1 == ret) || (SharedClassUtilities.DESTROYED_ALL_CACHE != ret)) {
 			    		fail("SharedClassUtilities.destroySharedCache failed (persistent), Cache Name: " + cacheName);
 			    	}
+					if ((addrMode.equals("64")) && (cacheName.equals("cache3_multilayercache"))) {
+						ret = SharedClassUtilities.destroySharedCache(dir, SharedClassUtilities.PERSISTENT, cacheName, false);
+						if ((-1 == ret) || (SharedClassUtilities.DESTROYED_ALL_CACHE != ret)) {
+							fail("SharedClassUtilities.destroySharedCache failed (persistent), Cache Name: " + cacheName);
+						}
+					}
 			    	checkFileDoesNotExistForPersistentCache(cacheName);
 		    	}
 		    	if (dirGroupAccess != null) {
