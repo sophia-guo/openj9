@@ -650,8 +650,6 @@ public class TestUtils {
 					return "";
 				}
 				String cacheDir = test.substring(0,i);//read just the dir
-			//	System.out.println("HERE(getCacheDir):"+test+" "+cacheDir);
-				
 				lastresult_getCacheDir = cacheDir;
 				return cacheDir;
 			}
@@ -1531,10 +1529,6 @@ public class TestUtils {
 		return RunCommand.lastCommandStderrLines;
 	}
 	
-	public static boolean isIBM() {
-		return System.getProperty("java.vm.vendor").toLowerCase().contains("ibm");
-	}
-	
 	public static boolean isOpenJ9() {
 		return System.getProperty("java.vm.vendor").toLowerCase().contains("openj9");
 	}
@@ -1542,7 +1536,7 @@ public class TestUtils {
 	public static String removeJavaSharedResourcesDir(String dir) {
 		if ( dir.contains("javasharedresources") ) {
 			int index = dir.lastIndexOf(java.io.File.separator);
-	    	return dir.substring(0, index);
+			return dir.substring(0, index);
 		}
 		return dir;
 	}

@@ -308,7 +308,7 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 				    				(System.currentTimeMillis() - cacheInfo.getLastDetach().getTime() < 0) ||			/* if lastDetach is in future */
 				    				(System.currentTimeMillis() - cacheInfo.getLastDetach().getTime() > (65*60*1000))	/* difference should not be more than 1 hr 5 mins */
 				    			) {
-				    				fail("SharedClassUtilities.getSharedCacheInfo failed for persistent cache: Cache information is not proper" + 
+				    				fail("SharedClassUtilities.getSharedCacheInfo failed for persistent groupAccess cache: Cache information is not proper" + 
 				    						"\n cacheName is " + cacheName +
 				    						"\n cacheInfo.getCacheSize() is " +  cacheInfo.getCacheSize() + 
 				    						"\n cacheInfo.getCacheSoftMaxBytes() is " + cacheInfo.getCacheSoftMaxBytes() +
@@ -324,14 +324,14 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 				    			if ((addrMode.equals("32") && (cacheInfo.getCacheAddressMode() != SharedClassCacheInfo.ADDRESS_MODE_32)) ||
 				    				(addrMode.equals("64") && (cacheInfo.getCacheAddressMode() != SharedClassCacheInfo.ADDRESS_MODE_64))
 				    			) {
-				    				fail("SharedClassUtilities.getSharedCacheInfo failed for persistent cache: Address mode is not proper");
+				    				fail("SharedClassUtilities.getSharedCacheInfo failed for persistent groupAccess cache: Address mode is not proper");
 				    			}
 				    			if ((jvmLevel.equals("1.6") && (cacheInfo.getCacheJVMLevel() != SharedClassCacheInfo.JVMLEVEL_JAVA6)) ||
 				    				(jvmLevel.equals("1.7") && (cacheInfo.getCacheJVMLevel() != SharedClassCacheInfo.JVMLEVEL_JAVA7)) ||
 				    				(jvmLevel.equals("1.8") && (cacheInfo.getCacheJVMLevel() != SharedClassCacheInfo.JVMLEVEL_JAVA8)) ||
 				    				((Double.parseDouble(jvmLevel) >= 10) && (cacheInfo.getCacheJVMLevel() != Integer.parseInt(jvmLevel)))
 				    			) {
-				    				fail("SharedClassUtilities.getSharedCacheInfo failed for persistent cache: JVM level is not proper");
+				    				fail("SharedClassUtilities.getSharedCacheInfo failed for persistent groupAccess cache: JVM level is not proper");
 				    			}
 				    		}
 				    	}
@@ -409,7 +409,7 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 				    				(System.currentTimeMillis() - cacheInfo.getLastDetach().getTime() < 0) ||			/* if lastDetach is in future */
 				    				(System.currentTimeMillis() - cacheInfo.getLastDetach().getTime() > (65*60*1000))	/* difference should not be more than 1 hr 5 mins */
 				    			) {
-				    				fail("SharedClassUtilities.getSharedCacheInfo failed for non-persistent cache: Cache information is not proper Cache information is not proper " + 
+				    				fail("SharedClassUtilities.getSharedCacheInfo failed for non-persistent groupAccess cache: Cache information is not proper Cache information is not proper " + 
 				    					"\n cacheName is " + cacheName + 
 				    					"\n cacheInfo.getCacheSize() is " +  cacheInfo.getCacheSize() + 
 			    						"\n cacheInfo.getCacheSoftMaxBytes() is " + cacheInfo.getCacheSoftMaxBytes() +
@@ -423,14 +423,14 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 				    			if ((addrMode.equals("32") && (cacheInfo.getCacheAddressMode() != SharedClassCacheInfo.ADDRESS_MODE_32)) ||
 				    				(addrMode.equals("64") && (cacheInfo.getCacheAddressMode() != SharedClassCacheInfo.ADDRESS_MODE_64))
 				    			) {
-				    				fail("SharedClassUtilities.getSharedCacheInfo failed for non-persistent cache: Address mode is not proper");
+				    				fail("SharedClassUtilities.getSharedCacheInfo failed for non-persistent groupAccess cache: Address mode is not proper");
 				    			}
 				    			if ((jvmLevel.equals("1.6") && (cacheInfo.getCacheJVMLevel() != SharedClassCacheInfo.JVMLEVEL_JAVA6)) ||
 				    				(jvmLevel.equals("1.7") && (cacheInfo.getCacheJVMLevel() != SharedClassCacheInfo.JVMLEVEL_JAVA7)) ||
 				    				(jvmLevel.equals("1.8") && (cacheInfo.getCacheJVMLevel() != SharedClassCacheInfo.JVMLEVEL_JAVA8)) ||
 				    				((Double.parseDouble(jvmLevel) >= 10) && (cacheInfo.getCacheJVMLevel() != Integer.parseInt(jvmLevel)))
 				    			) {
-				    				fail("SharedClassUtilities.getSharedCacheInfo failed for non-persistent cache: JVM level is not proper");
+				    				fail("SharedClassUtilities.getSharedCacheInfo failed for non-persistent groupAccess cache: JVM level is not proper");
 				    			}
 		
 			    				if ((isWindows()) && ((cacheInfo.getOSshmid() > 0) || (cacheInfo.getOSsemid() > 0))) {
@@ -613,9 +613,9 @@ public class TestSharedCacheJavaAPI extends TestUtils {
 			runDestroyAllCaches();
 			if (false == isWindows()) {
 				runDestroyAllSnapshots();
-	        	if (isOpenJ9()) {
-	            	runDestroyAllGroupAccessCaches();
-	            }
+				if (isOpenJ9()) {
+					runDestroyAllGroupAccessCaches();
+				}
 			}
 		}
 	}
