@@ -56,3 +56,5 @@ The tests can be launched as JUnit tests and the five possible combinations are 
 You must edit the config.properties to choose the JVM that needs testing before you launch them.
 
 There is a lightweight cmdlinetester script that invokes JUnit and that is what is used on nescafe.
+
+TEst
