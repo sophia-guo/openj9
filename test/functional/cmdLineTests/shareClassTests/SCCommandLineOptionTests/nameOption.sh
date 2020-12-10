@@ -38,8 +38,10 @@ if [ ! -e $TESTSCRIPT.out ]
 then
     echo $TESTSCRIPT: TEST FAILED No file created
 else
-    if ( ! grep "$DEFAULT_CACHE_NAME" $TESTSCRIPT.out >/dev/null )
+    cat $TESTSCRIPT.out
+    if ( grep "$DEFAULT_CACHE_NAME" $TESTSCRIPT.out >/dev/null )
     then
+        echo $DEFAULT_CACHE_NAME is $DEFAULT_CACHE_NAME
         echo $TESTSCRIPT: TEST FAILED
         echo $TESTSCRIPT: Expected to find the cache name
     else

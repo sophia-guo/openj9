@@ -32,7 +32,13 @@ export NAME=_%u_%g
 
 #_$var does not expand shell variables. added { } brackets intentionally
 export EXPANDED_NAME="_${TESTUSER}_${GROUPNAME}"
-
+echo Name si $NAME
+echo TESTUSER is $TESTUSER
+echo GROUPENAME is $GROUPNAME
+echo EXPANDED_NAME is $EXPANDED_NAME
+echo TESTUSER is ${TESTUSER}
+echo GROUPENAME is ${GROUPNAME}
+echo EXPANDED_NAME is ${EXPANDED_NAME}
 $1/java -Xshareclasses:name=$NAME HelloWorld
 $1/java -Xshareclasses:listAllCaches 2> $TESTSCRIPT.out
 
@@ -40,12 +46,14 @@ if [ ! -e $TESTSCRIPT.out ]
 then
     echo nameOption: TEST FAILED: No file created
 else
-    if ( ! grep $EXPANDED_NAME $TESTSCRIPT.out >/dev/null )
+    cat $TESTSCRIPT.out
+    echo this is a tests: $EXPANDED_NAME
+    if ( ! grep "$EXPANDED_NAME" $TESTSCRIPT.out >/dev/null )
     then
     	echo $TESTSCRIPT: TEST FAILED
         echo $TESTSCRIPT: Expected to find the cache name
 	else 
-		echo TEST PASSED            
+		echo TEST PASSED
     fi
 fi
 

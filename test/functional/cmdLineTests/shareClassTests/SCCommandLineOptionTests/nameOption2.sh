@@ -29,7 +29,10 @@
 . ./cmdlineConfig.sh
 export TESTSCRIPT=nameOption2
 export NAME=%u
-
+echo NAME is $NAME
+echo TESTUSER is $TESTUSER
+echo NAME is ${NAME}
+echo TESTUSER is ${TESTUSER}
 $1/java -Xshareclasses:name=$NAME HelloWorld
 $1/java -Xshareclasses:listAllCaches 2> $TESTSCRIPT.out
 
@@ -37,6 +40,8 @@ if [ ! -e $TESTSCRIPT.out ]
 then
     echo $TESTSCRIPT: TEST FAILED: No file created
 else
+    cat $TESTSCRIPT.out
+    echo TEST users is $TESTUSER
     if ( ! grep $TESTUSER $TESTSCRIPT.out >/dev/null )
 	then
     	echo $TESTSCRIPT: TEST FAILED
