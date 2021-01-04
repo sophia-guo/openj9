@@ -29,7 +29,7 @@
  <variable name="CP" value="-cp $UTILSJAR$" />
  <variable name="PROGRAM" value="org.openj9.test.ivj.Hanoi 2" />
  <variable name="CACHENAME" value="shareddbgext" />
- <variable name="DUMPFILE" value="j9core.dmp" />
+ <variable name="DUMPFILE" value="/cores/j9core.dmp" />
  <variable name="DUMPDIR" value="dumpdir" />
  <variable name="XDUMP" value="-Xdump:system:file=$DUMPFILE$,events=vmstop" />
  
@@ -47,8 +47,7 @@
  <test id="Create core file">
   <exec command="tso delete J9CORE.DMP.*" platforms="zos_390-64.*" />
   <exec command="tso delete J9CORE.DMP" platforms="zos_390-31.*" />
-  <exec command="rm -f $DUMPFILE$" />
-  <command>$EXE$ -Xaot:forceaot,count=0 -Xshareclasses:name=$CACHENAME$ $CP$ $XDUMP$ $PROGRAM$</command>
+  <command>$EXE$ -Xcheck:dump -Xaot:forceaot,count=0 -Xshareclasses:name=$CACHENAME$ $CP$ $XDUMP$ $PROGRAM$</command>
   <output regex="no" type="success">Moved disk 0 to 1</output>
   <output regex="no" type="success">System dump written</output>
   <!-- check for unexpected core dumps -->

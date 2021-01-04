@@ -83,13 +83,40 @@ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-excepti
 		<variations>
 			<variation>NoOptions</variation>
 		</variations>
-		<command>perl $(JVM_TEST_ROOT)$(D)TestConfig$(D)scripts$(D)tools$(D)sysvcleanup.pl zos ; \
+		<command>sudo ls -l / ; \
+	perl $(JVM_TEST_ROOT)$(D)TestConfig$(D)scripts$(D)tools$(D)sysvcleanup.pl zos ; \
 	$(JAVA_COMMAND) $(JVM_OPTIONS) -Xint \
 	-DUTILSJAR=$(Q)$(JVM_TEST_ROOT)$(D)functional$(D)cmdLineTests$(D)utils$(D)utils.jar$(Q) \
 	-DRESJAR=$(CMDLINETESTER_RESJAR) -DEXE=$(SQ)$(JAVA_COMMAND) $(JVM_OPTIONS)$(SQ) \
 	-DJDMPVIEW_EXE=$(Q)$(TEST_JDK_HOME)$(D)bin$(D)jdmpview$(EXECUTABLE_SUFFIX)$(Q) \
 	-jar $(CMDLINETESTER_JAR) \
 	-config $(Q)$(TEST_RESROOT)$(D)callsiteddrtests.xml$(Q) -plats all,$(PLATFORM),$(VARIATION) -nonZeroExitWhenError; \
+	${TEST_STATUS}</command>
+		<!-- temporarily disable this test on z/OS; github.com/eclipse/openj9/issues/1511 -->
+		<platformRequirements>^os.zos</platformRequirements>
+		<levels>
+			<level>sanity</level>
+		</levels>
+		<impls>
+			<impl>openj9</impl>
+		</impls>
+		<groups>
+			<group>functional</group>
+		</groups>
+	</test>
+	<test>
+		<testCaseName>cmdLineTester_callsitedbgddrext_openj9_test</testCaseName>
+		<variations>
+			<variation>NoOptions</variation>
+		</variations>
+		<command>
+	sudo ls -l / ; \
+	sudo  ulimit -c unlimited ; \
+	perl $(JVM_TEST_ROOT)$(D)TestConfig$(D)scripts$(D)tools$(D)sysvcleanup.pl zos ; \
+	$(JAVA_COMMAND) -Xcheck:dump -Xaot:forceaot,count=0 -Xshareclasses:name=shareddbgext -cp $(Q)$(JVM_TEST_ROOT)$(D)functional$(D)cmdLineTests$(D)utils$(D)utils.jar$(Q) -Xdump:system:file=/cores/j9core.dmp,events=vmstop org.openj9.test.ivj.Hanoi 2; \
+	sudo ls -l / ; \
+	sudo cd /cores ; \
+	sudo ls -l /cores; \
 	${TEST_STATUS}</command>
 		<!-- temporarily disable this test on z/OS; github.com/eclipse/openj9/issues/1511 -->
 		<platformRequirements>^os.zos</platformRequirements>
