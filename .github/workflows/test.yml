@@ -1,0 +1,17 @@
+name: "build-openj9"
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    steps:
+    - run: |
+        echo $GITHUB_REF
+        echo $GITHUB_HEAD_REF
+    - uses: sophia-guo/build-openj9@repoName
+      id: buildJDK
+      with:
+        version: 11
+        usePersonalRepo: true
+    - run: ${{ steps.buildJDK.outputs.BuildJDKDir }}/bin/java -version
